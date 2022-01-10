@@ -1,4 +1,4 @@
-import { BigInt } from "@graphprotocol/graph-ts"
+import { BigInt, Address, ethereum } from "@graphprotocol/graph-ts"
 import {
   Lore,
   Approval,
@@ -7,7 +7,7 @@ import {
   SentenceAdded,
   Transfer
 } from "../generated/Lore/Lore"
-import { ExampleEntity } from "../generated/schema"
+import { ExampleEntity, Sentence } from "../generated/schema"
 
 export function handleApproval(event: Approval): void {
   // Entities can be loaded from the store using a string ID; this ID
@@ -81,6 +81,34 @@ export function handleApprovalForAll(event: ApprovalForAll): void {}
 
 export function handleOwnershipTransferred(event: OwnershipTransferred): void {}
 
-export function handleSentenceAdded(event: SentenceAdded): void {}
+export function handleSentenceAdded(event: SentenceAdded): void {
 
-export function handleTransfer(event: Transfer): void {}
+}
+
+export function handleTransfer(event: Transfer): void {
+  let id = event.params.tokenId.toString();
+  let entity: Sentence;
+  
+
+  if (event.params.from.equals(Address.zero())) {
+    // it's a mint -- sentence being added
+    entity = new Sentence(id)
+    let lore: Lore = Lore.bind(event.address)
+    let tokenId: BigInt = event.params.tokenId
+    
+    entity.imageStyle = BigInt.fromU32(lore.imageStyle(tokenId))
+    entity.sentence = lore.sentence(tokenId)
+    entity.adapter = lore.adapter(tokenId)
+
+    // get parent
+    let parentId = lore.parent(tokenId);
+    let parentEntity = Sentence.load(parentId.toString());
+    entity.parent = parentEntity ? parentEntity.id : null
+    
+  } else {
+    entity = Sentence.load(id)!;
+  }
+
+  entity.owner = event.params.to;
+  entity.save()
+}

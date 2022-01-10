@@ -4,3 +4,13 @@ type ExampleEntity @entity {
   owner: Bytes! # address
   approved: Bytes! # address
 }
+
+type Sentence @entity {
+  id: ID! #tokenId, uint256
+  imageStyle: BigInt! # uint16
+  sentence: String! # string
+  adapter: Bytes! #address
+  owner: Bytes! # address
+  parent: Sentence # uint256
+  children: [Sentence!]! @derivedFrom(field: "parent") 
+}

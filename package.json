@@ -10,7 +10,10 @@
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 jrfrantz/lore"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.25.1",
+    "@graphprotocol/graph-cli": "^0.25.1",
     "@graphprotocol/graph-ts": "0.24.1"
+  },
+  "resolutions": {
+    "colors": "1.4.0"
   }
 }
